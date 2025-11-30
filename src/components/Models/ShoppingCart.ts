@@ -1,6 +1,6 @@
-import { IProduct } from "../../../types"; 
+import { IProduct } from "../../types"; 
 
-class ShoppingCart {
+export class ShoppingCart {
     items: IProduct[]; //массив товаров в корзине
 
     constructor() {

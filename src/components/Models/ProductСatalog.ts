@@ -1,6 +1,6 @@
-import { IProduct } from "../../../types"; 
+import { IProduct } from "../../types";
 
-class ProductCatalog {
+export class ProductCatalog {
     private products: IProduct[];
     private selectedCard: IProduct | null;
     constructor() {
@@ -20,7 +20,7 @@ class ProductCatalog {
         return this.selectedCard
     }
 
-    setProducts(newProducts: IProduct[]): void {  // сохранить массив тораров
+    setProductsList(newProducts: IProduct[]): void {  // сохранить массив тораров
         this.products = [...newProducts]
     }
 }

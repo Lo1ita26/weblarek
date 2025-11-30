@@ -20,3 +20,22 @@ export interface IBuyer {
     phone: string;
     address: string;
   }
+
+  export interface IOrderRequest extends IBuyer {
+    total: number;
+    items: string[];
+  }
+
+  export interface ValidationError {
+      [key: string]: string;
+  }
+
+  export interface IResponseProduct {
+    items: IProduct[];
+    total: number;
+}
+
+export interface IResponseOrder {
+  id: string;
+  total: number;
+}

@@ -1,10 +1,6 @@
-import { IBuyer } from "../../../types"; 
+import { IBuyer, ValidationError } from "../../types";
 
-export interface ValidationError {
-    [key: string]: string;
-}
-
-class BuyerData {
+export class BuyerData {
     data: IBuyer = {
         payment: '',
         address: '',
@@ -13,11 +9,8 @@ class BuyerData {
     };
 
     saveField(field: keyof IBuyer, value: string): boolean {  // Сохраняет данные покупателя
-        if (!this.validateField(field, value)) {
-            return false;
-        }
         this.data[field] = value;
-        return true;
+        return this.validateField(field, value);
     }
 
     getAllData(): IBuyer {  //получает данные
