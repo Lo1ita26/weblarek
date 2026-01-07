@@ -1,5 +1,4 @@
-import { IApi, IProduct } from "../../types";
-import { IResponseProduct, IOrderRequest, IResponseOrder } from "../../types";
+import { IApi, IResponseProduct, IOrderRequest, IResponseOrder } from "../../types";
 
 export class ApiWebLarek {
     private api: IApi;
@@ -7,9 +6,8 @@ export class ApiWebLarek {
         this.api = api
     }
 
-    async getProducts(): Promise <IProduct[]> {
-        const data = await this.api.get<IResponseProduct>('/product/');
-        return data.items;
+    async getProducts(): Promise<IResponseProduct> {
+        return await this.api.get('/product/');
     }
 
     async postOrder(data: IOrderRequest): Promise<IResponseOrder> {

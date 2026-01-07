@@ -1,14 +1,17 @@
 import { IProduct } from "../../types"; 
+import { IEvents } from "../base/Events";
+import { pageEvents } from "../base/pageEvents";
 
 export class ShoppingCart {
-    items: IProduct[]; //массив товаров в корзине
+    items: IProduct[] = []; //массив товаров в корзине
 
-    constructor() {
-        this.items = [];
+    constructor(protected events: IEvents) {
+        this.events = events
     }
 
     addItem(product: IProduct): void { //добавить товар в корзину
         this.items.push(product);
+        this.events.emit(pageEvents.changedCart)
     }
 
     removeItem(id: string): boolean { //удалить товар из корзины

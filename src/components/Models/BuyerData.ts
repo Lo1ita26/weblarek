@@ -1,23 +1,31 @@
-import { IBuyer, ValidationError } from "../../types";
+import { IBuyer, TPayment, ValidationError } from "../../types";
+import { IEvents } from "../base/Events";
 
 export class BuyerData {
     data: IBuyer = {
-        payment: '',
+        payment: '' as TPayment,
         address: '',
         phone: '',
         email: ''
     };
 
-    saveField(field: keyof IBuyer, value: string): boolean {  // Сохраняет данные покупателя
+    constructor(protected events: IEvents) {
+        this.events = events;
+    }
+
+    // Сохраняет данные покупателя
+    saveField(field: keyof IBuyer, value: TPayment): boolean {
         this.data[field] = value;
         return this.validateField(field, value);
     }
 
-    getAllData(): IBuyer {  //получает данные
+    //получает данные
+    getAllData(): IBuyer {
         return {...this.data};
     }
 
-    clearData(): void {  //очищает данные 
+    //очищает данные 
+    clearData(): void {
         this.data = {
             payment: '',
             address: '',
@@ -25,8 +33,9 @@ export class BuyerData {
             email: ''
         };
     }
-
-    validateField(field: keyof IBuyer, value: string): boolean {  //проверяет валидность поля
+    
+    //проверяет валидность поля
+    validateField(field: keyof IBuyer, value: string): boolean {
         return value !== '';
     }
 
