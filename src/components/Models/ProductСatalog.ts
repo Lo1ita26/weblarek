@@ -34,5 +34,6 @@ export class ProductCatalog {
     // сохранить выбранную карточку товара
     setSelectedCard(product: IProduct): void {
         this.selectedCard = product;
+        this.events.emit(pageEvents.cardSelect)
     }
 }

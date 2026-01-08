@@ -292,7 +292,7 @@ interface ISuccess {
 `set titleButton(value: string)` - сетттер дл описания товара.  
 `set categorySet(value: string)` - сеттер для категории товара.  
 `set imageSet(value: string)` - сеттер для установки изображения товара.  
-`set disabledButton(value: boolean)` - сеттер для изменения кнопки купить.  
+`setdisabledButton(value: boolean)` - сеттер для изменения кнопки купить.  
 
 ### Класс CardShoppingCart
 Класс для карточки товара в корзине.

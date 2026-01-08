@@ -21,7 +21,7 @@ export class Success extends Component<ISuccess> {
         });
     }
 
-    set totalCostSet(value: number) {
+    set totalCost(value: number) {
         this.descriptionSuccess.textContent =  `Списано ${value} синапсов`;
     }
 }

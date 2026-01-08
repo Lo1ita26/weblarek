@@ -2,22 +2,20 @@ import { IBuyer, TPayment, ValidationError } from "../../types";
 import { IEvents } from "../base/Events";
 
 export class BuyerData {
-    data: IBuyer = {
-        payment: '' as TPayment,
-        address: '',
-        phone: '',
-        email: ''
-    };
+    data: IBuyer = {};
 
     constructor(protected events: IEvents) {
         this.events = events;
     }
 
     // Сохраняет данные покупателя
-    saveField(field: keyof IBuyer, value: TPayment): boolean {
-        this.data[field] = value;
-        return this.validateField(field, value);
-    }
+    saveField(field: keyof IBuyer, value: TPayment | string) {
+        if (field === 'payment') {
+          this.data[field] = value as TPayment;
+        } else {
+          this.data[field] = value;
+        }
+      }
 
     //получает данные
     getAllData(): IBuyer {
@@ -33,26 +31,21 @@ export class BuyerData {
             email: ''
         };
     }
-    
-    //проверяет валидность поля
-    validateField(field: keyof IBuyer, value: string): boolean {
-        return value !== '';
-    }
 
     validateData(): ValidationError {
         const errors: ValidationError = {};
         
-        if (this.data.payment === '') {
+        if (!this.data.payment) {
             errors.payment = 'Не выбран вид оплаты';
         }
-        if (this.data.address === '') {
+        if (!this.data.address) {
             errors.address = 'Укажите адрес';
         }
-        if (this.data.phone === '') {
+        if (!this.data.phone) {
             errors.phone = 'Укажите телефон';
         }
-        if (this.data.email === '') {
-            errors.email = 'Укажите емэйл';
+        if (!this.data.email) {
+            errors.email = 'Укажите email';
         }
 
         return errors;

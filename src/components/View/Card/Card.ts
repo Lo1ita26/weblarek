@@ -1,24 +1,24 @@
 import { Component } from "../../base/Component";
 
 export abstract class Card<T> extends Component<T> {
-    protected title: HTMLElement | null;
-    protected price: HTMLElement | null;
+    protected titleEl: HTMLElement | null;
+    protected priceEl: HTMLElement | null;
 
     constructor (container: HTMLElement) {
         super(container);
-        this.title = container.querySelector('.card__title');
-        this.price = container.querySelector('.card__price');
+        this.titleEl = container.querySelector('.card__title');
+        this.priceEl = container.querySelector('.card__price');
     }
 
-    set titleSet(value: string) {
-        if (this.title) {
-            this.title.textContent = value;
+    set title(value: string) {
+        if (this.titleEl) {
+            this.titleEl.textContent = value;
         }
     }
 
-    set priceSet(value: number | null) {
-        if (this.price) {
-            this.price.textContent = value === null ? 'Бесценно' : `${value} синапсов`
+    set price(value: number | null) {
+        if (this.priceEl) {
+            this.priceEl.textContent = value === null ? 'Бесценно' : `${value} синапсов`
         }
     }
 }

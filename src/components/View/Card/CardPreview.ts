@@ -10,49 +10,48 @@ export interface ICardPreview{
 }
 
 export class CardPreview extends Card <TCardPreview> {
-    protected description: HTMLElement;
-    protected button: HTMLButtonElement;
-    protected image: HTMLImageElement; 
-    protected category: HTMLElement;
+    protected descriptionEl: HTMLElement;
+    protected buttonEl: HTMLButtonElement;
+    protected imageEl: HTMLImageElement; 
+    protected categoryEl: HTMLElement;
 
     constructor (container: HTMLElement, protected actions: ICardPreview) {
         super(container);
-        this.description = this.container.querySelector('.card__text') as HTMLElement;
-        this.button = this.container.querySelector('.card__button') as HTMLButtonElement;
-        this.image = this.container.querySelector('.card__image') as HTMLImageElement;
-        this.category = this.container.querySelector('.card__category') as HTMLElement;
+        this.descriptionEl = this.container.querySelector('.card__text') as HTMLElement;
+        this.buttonEl = this.container.querySelector('.card__button') as HTMLButtonElement;
+        this.imageEl = this.container.querySelector('.card__image') as HTMLImageElement;
+        this.categoryEl = this.container.querySelector('.card__category') as HTMLElement;
 
-        this.button.addEventListener('click', () => {
+        this.buttonEl.addEventListener('click', () => {
             this.actions.onClick?.();
     })
 }
 
-set descriptionSet(value: string) {
-    this.description.textContent = value;
+set description(value: string) {
+    this.descriptionEl.textContent = value;
 }
 
-set categorySet(value: string) {
-        this.category.textContent = value;
+set category(value: string) {
+        this.categoryEl.textContent = value;
         for (const key in categoryMap) {
-            this.category.classList.toggle(categoryMap[key as categoryKey], key === value);
+            this.categoryEl.classList.toggle(categoryMap[key as categoryKey], key === value);
         }
     }
 
-set imageSet(value: string) {
-    this.image.src = value;
+set image(value: string) {
+    this.imageEl.src = value;
 }
 
 set availability(value: boolean) {
-  this.button.textContent = value ? 'Удалить из корзины' : 'В корзину';
+  this.buttonEl.textContent = value ? 'Удалить из корзины' : 'В корзину';
 }
 
 setdisabledButton(value: boolean): void {
-  if (this.button.disabled) {
-    return
-  } if (value) {
-    this.button.textContent = 'Недоступно';
+  if (value) {
+    this.buttonEl.textContent = 'Недоступно';
+    this.buttonEl.disabled = true;
   } else {
-    this.button.textContent = 'В корзину';
+    this.buttonEl.textContent = 'В корзину';
+    this.buttonEl.disabled = false;
   }
-}
-}
+}}

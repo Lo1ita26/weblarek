@@ -8,7 +8,7 @@ interface IShoppingCart {
 }
 
 export class ShoppingCartView extends Component<IShoppingCart> {
-  protected titleShoppingCart: HTMLElement;
+  protected titleShoppingCart: HTMLElement | null;
   protected listShoppingCart: HTMLElement;
   protected priceShoppingCart: HTMLElement;
   protected buttonShoppingCart: HTMLButtonElement;
@@ -16,7 +16,7 @@ export class ShoppingCartView extends Component<IShoppingCart> {
   constructor(container: HTMLElement, protected events: IEvents) {
     super(container);
 
-    this.titleShoppingCart = this.container.querySelector('.modal__title') as HTMLElement;
+    this.titleShoppingCart = this.container.querySelector('.modal__title');
     this.listShoppingCart = this.container.querySelector('.basket__list') as HTMLElement;
     this.priceShoppingCart = this.container.querySelector('.basket__price') as HTMLElement;
     this.buttonShoppingCart = this.container.querySelector('.basket__button') as HTMLButtonElement;

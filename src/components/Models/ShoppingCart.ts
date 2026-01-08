@@ -18,6 +18,7 @@ export class ShoppingCart {
         const index = this.items.findIndex(item => item.id === id);
         if (index !== -1) {
             this.items.splice(index, 1);
+            this.events.emit(pageEvents.changedCart)
             return true;
         }
         return false;

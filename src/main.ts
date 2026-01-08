@@ -19,7 +19,7 @@ import { BuyerData } from "./components/Models/BuyerData.ts";
 import { FormOrder } from "./components/View/Forms/FormOrder.ts";
 import { FormContact } from "./components/View/Forms/FormContact.ts";
 import { Success } from "./components/View/Success.ts";
-import { IProduct } from "./types/index.ts";
+import { IBuyer, IProduct, TPayment } from "./types/index.ts";
 
 // Константы
 const event = new EventEmitter();
@@ -31,7 +31,8 @@ const gallery = new Gallery(galleryItem);
 const shoppingCartModel = new ShoppingCart(event);
 const modalItem = ensureElement<HTMLFormElement>('#modal-container');
 const modal = new Modal(modalItem, event);
-const shoppingCartTemplate = document.getElementById('basket') as HTMLTemplateElement;
+const shoppingCartTemplate = document.getElementById('basket') as HTMLTemplateElement; //темплейт корзины
+const cardInCartTemplate = document.getElementById('card-basket') as HTMLTemplateElement; //темплейт картчек товаров в корзине
 const shoppingCartView = new ShoppingCartView(cloneTemplate(shoppingCartTemplate), event);
 const headerItem = ensureElement<HTMLElement>('.header');
 const header =  new Header(headerItem, event);
@@ -90,12 +91,11 @@ function openCard() {
   if (selectedCard.price === null) {
     card.setdisabledButton(true)
   }
-  card.availability = shoppingCartModel.hasItem(selectedCard.id);
   modal.content = card.render(selectedCard);
   modal.open();
 }
 
-event.on<IProduct>(pageEvents.selectCatalog, () => {
+event.on<IProduct>(pageEvents.cardSelect, () => {
   openCard()
 })
 
@@ -118,7 +118,7 @@ function updateShoppingCart() {
   const totalCost = shoppingCartModel.getTotalCost();
   const itemCount = shoppingCartModel.getItemCount();
   const itemsList = shoppingCartModel.getItemsList().map((product, index) => {
-    const cardTemplate = new CardShoppingCart(cloneTemplate(shoppingCartTemplate), {
+    const cardTemplate = new CardShoppingCart(cloneTemplate(cardInCartTemplate), {
       onDelete: () => event.emit(pageEvents.cardDelete, product),
     })
     cardTemplate.indexSet(index + 1);
@@ -140,7 +140,7 @@ event.on<IProduct>(pageEvents.cardDelete, (item) => {
   shoppingCartModel.removeItem(item.id)
 })
 
-// Открытие формы заказа (способ оплатыы)
+// Открытие формы заказа (способ оплаты)
 function openFormOrder() {
   const buyer = buyerData.getAllData();
   validateFormOrder();
@@ -154,8 +154,12 @@ event.on(pageEvents.cart, () => {
   openFormOrder()
 })
 
-event.on(pageEvents.addressForm, () => {
-  buyerData.saveField()
+event.on<{field: keyof IBuyer, value: TPayment}>(pageEvents.order, (data) => {
+  buyerData.saveField(data.field, data.value);
+  if (data.field === 'payment') {
+    formOrder.payment = data.value
+  }
+  validateFormOrder();
 })
 
 // Валидация формы способа оплаты
@@ -179,6 +183,11 @@ event.on(pageEvents.contactForm, () => {
   openFormContact()
 })
 
+event.on<{field: keyof IBuyer, value: TPayment | string}>(pageEvents.emailForm, (data) => {
+  buyerData.saveField(data.field, data.value);
+  validateFormContact();
+})
+
 // Валидация формы контакты
 function validateFormContact() {
   const error = buyerData.validateData();
@@ -187,10 +196,15 @@ function validateFormContact() {
 }
 
 // Открытие окна с успешным заказом
-function openSuccess({total}: {total: number}): void {
-  success.totalCostSet = total;
+function openSuccess(total: number): void {
+  success.totalCost = total;
   modal.content = success.render();
 }
+
+event.on(pageEvents.submit, () => {
+  const total = shoppingCartModel.getTotalCost();
+  openSuccess(total)
+})
 
 event.on(pageEvents.success, () => {
   modal.close()

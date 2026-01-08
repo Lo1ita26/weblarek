@@ -15,13 +15,16 @@ export class FormContact extends Form<IContactForm> {
         super(container);
         this.emailInput = this.container.querySelector('input[name="email"]') as HTMLInputElement;
         this.emailInput.addEventListener ('input', () => {
-            this.events.emit(pageEvents.emailForm, {email: this.emailInput.value})
+            this.events.emit(pageEvents.emailForm, {field: 'email', value: this.emailInput.value})
         })
-
         this.phoneInput = this.container.querySelector('input[name="phone"]') as HTMLInputElement;
         this.phoneInput.addEventListener ('input', () => {
-            this.events.emit(pageEvents.phoneForm, {phone: this.phoneInput.value})
+            this.events.emit(pageEvents.emailForm, {field: 'phone', value: this.phoneInput.value})
         })
+        this.container.addEventListener('submit', (e: Event) => {
+            e.preventDefault();
+            this.events.emit(pageEvents.submit);
+          });
     }
 
     set emailSet(value: string) {
