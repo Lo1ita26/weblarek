@@ -15,5 +15,6 @@ export const pageEvents = {
     cardSelect: 'card: select',
     cardDelete: 'card: delete',
     contactForm: 'contactForm: open',
-    submit: 'submit: order'
+    submit: 'submit: order',
+    addTocart: 'card: addToCart'
 }

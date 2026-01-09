@@ -25,7 +25,7 @@ import { IBuyer, IProduct, TPayment } from "./types/index.ts";
 const event = new EventEmitter();
 const catalogCards = new ProductCatalog(event);
 const api = new Api(API_URL);
-const apiWebLarek: ApiWebLarek = new ApiWebLarek(api);
+const apiWebLarek = new ApiWebLarek(api);
 const galleryItem = ensureElement<HTMLElement>('main');
 const gallery = new Gallery(galleryItem);
 const shoppingCartModel = new ShoppingCart(event);
@@ -36,15 +36,16 @@ const cardInCartTemplate = ensureElement<HTMLTemplateElement>('#card-basket');//
 const shoppingCartView = new ShoppingCartView(cloneTemplate(shoppingCartTemplate), event);
 const headerItem = ensureElement<HTMLElement>('.header');
 const header =  new Header(headerItem, event);
-const buyerData: BuyerData =  new BuyerData(event);
+const buyerData =  new BuyerData(event);
 const formOrderElement = ensureElement<HTMLTemplateElement>('#order');
-const formOrder: FormOrder = new FormOrder(cloneTemplate(formOrderElement), event);
+const formOrder = new FormOrder(cloneTemplate(formOrderElement), event);
 const formContactElement = ensureElement<HTMLTemplateElement>('#contacts');
-const formContact: FormContact = new FormContact(cloneTemplate(formContactElement), event) ;
+const formContact = new FormContact(cloneTemplate(formContactElement), event) ;
 const successElement = ensureElement<HTMLTemplateElement>('#success');
-const success: Success = new Success(cloneTemplate(successElement), event);
+const success = new Success(cloneTemplate(successElement), event);
 const templateCardCatalog = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
+const card = new CardPreview(cloneTemplate(cardTemplate), event);
 
 function loadCatalog() {
   apiWebLarek.getProducts()
@@ -76,25 +77,27 @@ event.on(pageEvents.catalog, () => {
 function openCard() {
   const selectedCard = catalogCards.getSelectedCard();
   if (!selectedCard) return;
-  const card = new CardPreview(cloneTemplate(cardTemplate), {
-    onClick: () => {
-      const availability: boolean = shoppingCartModel.hasItem(selectedCard.id);
+  const availability: boolean = shoppingCartModel.hasItem(selectedCard.id);
+  card.buttonText = availability;
+  if (card.price === null) {
+    card.setdisabledButton(true)
+  }
+  modal.content = card.render(selectedCard);
+  modal.open();
+}
+
+event.on(pageEvents.addTocart, () => {
+  const selectedCard = catalogCards.getSelectedCard();
+  if (!selectedCard) return;
+  const availability: boolean = shoppingCartModel.hasItem(selectedCard.id);
       if (availability) {
         shoppingCartModel.removeItem(selectedCard.id);
       }
       else {
         shoppingCartModel.addItem(selectedCard)
       }
-      card.buttonText = !availability;
-      modal.content = card.render();
-    }
-  })
-  if (selectedCard.price === null) {
-    card.setdisabledButton(true)
-  }
-  modal.content = card.render(selectedCard);
-  modal.open();
-}
+      modal.close()
+})
 
 event.on<IProduct>(pageEvents.cardSelect, () => {
   openCard()
@@ -157,9 +160,6 @@ event.on(pageEvents.cart, () => {
 
 event.on<{field: keyof IBuyer, value: TPayment}>(pageEvents.order, (data) => {
   buyerData.saveField(data.field, data.value);
-  if (data.field === 'payment') {
-    formOrder.payment = data.value
-  }
   validateFormOrder();
 })
 
@@ -204,8 +204,16 @@ function openSuccess(total: number): void {
 
 event.on(pageEvents.submit, () => {
   const total = shoppingCartModel.getTotalCost();
+  const items = shoppingCartModel.getItemsList().map(i => i.id);
+  const buyer = buyerData.getAllData();
+  apiWebLarek.postOrder({total, items, ...buyer})
+  .then(({total}) => {
   openSuccess(total);
   shoppingCartModel.clearShoppingCart();
+  })
+  .catch(error => {
+    console.log('Ошибка при отправке заказа', error)
+  })
 })
 
 event.on(pageEvents.success, () => {

@@ -23,6 +23,7 @@ export class FormOrder extends Form<IOrderForm>{
         this.paymentButton.forEach((button) => {
             button.addEventListener('click', () => {
                 this.events.emit(pageEvents.order, { field: 'payment', value: button.name });
+                this.payment = button.name;
             });
         });
         this.nextButton?.addEventListener('click', () => {

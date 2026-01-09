@@ -2,13 +2,11 @@ import { IProduct } from "../../../types";
 import { categoryMap } from "../../../utils/constants";
 import { Card } from "./Card";
 import { ensureElement } from "../../../utils/utils";
+import { pageEvents } from "../../base/pageEvents";
+import { IEvents } from "../../base/Events";
 
 export type TCardPreview = Pick<IProduct, 'description' | 'image' | 'category'>;
 type categoryKey = keyof typeof categoryMap;
-
-export interface ICardPreview{
-    onClick?: () => void;
-}
 
 export class CardPreview extends Card <TCardPreview> {
     protected descriptionEl: HTMLElement;
@@ -16,7 +14,7 @@ export class CardPreview extends Card <TCardPreview> {
     protected imageEl: HTMLImageElement; 
     protected categoryEl: HTMLElement;
 
-    constructor (container: HTMLElement, protected actions: ICardPreview) {
+    constructor (container: HTMLElement, protected events: IEvents) {
         super(container);
         this.descriptionEl = ensureElement<HTMLElement>('.card__text', this.container);
         this.buttonEl = ensureElement<HTMLButtonElement>('.card__button', this.container);
@@ -24,7 +22,7 @@ export class CardPreview extends Card <TCardPreview> {
         this.categoryEl = ensureElement<HTMLElement>('.card__category', this.container);
 
         this.buttonEl.addEventListener('click', () => {
-            this.actions.onClick?.();
+            this.events.emit(pageEvents.addTocart);
     })
 }
 
