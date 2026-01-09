@@ -2,7 +2,12 @@ import { IBuyer, TPayment, ValidationError } from "../../types";
 import { IEvents } from "../base/Events";
 
 export class BuyerData {
-    data: IBuyer = {};
+    private data: IBuyer = {
+        payment: '',
+        email: '',
+        phone: '',
+        address: '',
+    };
 
     constructor(protected events: IEvents) {
         this.events = events;

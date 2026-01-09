@@ -23,7 +23,7 @@ import { IBuyer, IProduct, TPayment } from "./types/index.ts";
 
 // Константы
 const event = new EventEmitter();
-const catalogCards: ProductCatalog  = new ProductCatalog(event);
+const catalogCards = new ProductCatalog(event);
 const api = new Api(API_URL);
 const apiWebLarek: ApiWebLarek = new ApiWebLarek(api);
 const galleryItem = ensureElement<HTMLElement>('main');
@@ -31,8 +31,8 @@ const gallery = new Gallery(galleryItem);
 const shoppingCartModel = new ShoppingCart(event);
 const modalItem = ensureElement<HTMLFormElement>('#modal-container');
 const modal = new Modal(modalItem, event);
-const shoppingCartTemplate = document.getElementById('basket') as HTMLTemplateElement; //темплейт корзины
-const cardInCartTemplate = document.getElementById('card-basket') as HTMLTemplateElement; //темплейт картчек товаров в корзине
+const shoppingCartTemplate = ensureElement<HTMLTemplateElement>('#basket');//темплейт корзины
+const cardInCartTemplate = ensureElement<HTMLTemplateElement>('#card-basket');//темплейт картчек товаров в корзине
 const shoppingCartView = new ShoppingCartView(cloneTemplate(shoppingCartTemplate), event);
 const headerItem = ensureElement<HTMLElement>('.header');
 const header =  new Header(headerItem, event);
@@ -43,9 +43,8 @@ const formContactElement = ensureElement<HTMLTemplateElement>('#contacts');
 const formContact: FormContact = new FormContact(cloneTemplate(formContactElement), event) ;
 const successElement = ensureElement<HTMLTemplateElement>('#success');
 const success: Success = new Success(cloneTemplate(successElement), event);
-
-// Загрузка каталога на страницу
-loadCatalog();
+const templateCardCatalog = ensureElement<HTMLTemplateElement>('#card-catalog');
+const cardTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
 
 function loadCatalog() {
   apiWebLarek.getProducts()
@@ -53,12 +52,15 @@ function loadCatalog() {
     data.items.map((item) => (item.image = CDN_URL + item.image));
     catalogCards.setProductsList(data.items)
   })
+  .catch((error) => console.log("Ошибка", error));
 }
+
+// Загрузка каталога на страницу
+loadCatalog();
 
 // Изменения в каталоге
 event.on(pageEvents.catalog, () => {
-  const templateCardCatalog = document.getElementById('card-catalog') as HTMLTemplateElement;
-  const cardsItem = catalogCards.getProductsList().map((selectedCard) => {
+  const productCards = catalogCards.getProductsList().map((selectedCard) => {
     const card = new CardCatalog (cloneTemplate(templateCardCatalog), {
       onClick: () => {
         catalogCards.setSelectedCard(selectedCard)
@@ -67,14 +69,13 @@ event.on(pageEvents.catalog, () => {
     console.log(selectedCard)
     return card.render(selectedCard)
   })
-  gallery.catalog = cardsItem
+  gallery.catalog = productCards
 })
 
 // Открытие модального окна с информацией о товаре
 function openCard() {
   const selectedCard = catalogCards.getSelectedCard();
   if (!selectedCard) return;
-  const cardTemplate = document.getElementById('card-preview') as HTMLTemplateElement;
   const card = new CardPreview(cloneTemplate(cardTemplate), {
     onClick: () => {
       const availability: boolean = shoppingCartModel.hasItem(selectedCard.id);
@@ -84,7 +85,7 @@ function openCard() {
       else {
         shoppingCartModel.addItem(selectedCard)
       }
-      card.availability = !availability;
+      card.buttonText = !availability;
       modal.content = card.render();
     }
   })
@@ -118,11 +119,11 @@ function updateShoppingCart() {
   const totalCost = shoppingCartModel.getTotalCost();
   const itemCount = shoppingCartModel.getItemCount();
   const itemsList = shoppingCartModel.getItemsList().map((product, index) => {
-    const cardTemplate = new CardShoppingCart(cloneTemplate(cardInCartTemplate), {
+    const card = new CardShoppingCart(cloneTemplate(cardInCartTemplate), {
       onDelete: () => event.emit(pageEvents.cardDelete, product),
     })
-    cardTemplate.indexSet(index + 1);
-    return cardTemplate.render(product);
+    card.indexSet(index + 1);
+    return card.render(product);
   })
   shoppingCartView.basket = itemsList;
   if (shoppingCartModel.getItemCount() === 0) {
@@ -203,9 +204,10 @@ function openSuccess(total: number): void {
 
 event.on(pageEvents.submit, () => {
   const total = shoppingCartModel.getTotalCost();
-  openSuccess(total)
+  openSuccess(total);
+  shoppingCartModel.clearShoppingCart();
 })
 
 event.on(pageEvents.success, () => {
-  modal.close()
+  modal.close();
 })

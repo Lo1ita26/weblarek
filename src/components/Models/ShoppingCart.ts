@@ -24,6 +24,11 @@ export class ShoppingCart {
         return false;
     }
 
+    clearShoppingCart(): void {
+        this.items = [];
+        this.events.emit(pageEvents.changedCart)
+    }
+
     getItemCount(): number  { //получить количество товаров в корзине
         return this.items.length;
     }

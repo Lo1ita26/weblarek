@@ -1,3 +1,4 @@
+import { ensureElement } from '../../utils/utils';
 import { Component } from '../base/Component';
 import { IEvents } from '../base/Events';
 import { pageEvents } from '../base/pageEvents';
@@ -16,13 +17,14 @@ export class ShoppingCartView extends Component<IShoppingCart> {
   constructor(container: HTMLElement, protected events: IEvents) {
     super(container);
 
-    this.titleShoppingCart = this.container.querySelector('.modal__title');
-    this.listShoppingCart = this.container.querySelector('.basket__list') as HTMLElement;
-    this.priceShoppingCart = this.container.querySelector('.basket__price') as HTMLElement;
-    this.buttonShoppingCart = this.container.querySelector('.basket__button') as HTMLButtonElement;
+    this.titleShoppingCart = ensureElement<HTMLElement>('.modal__title', this.container);
+    this.listShoppingCart = ensureElement<HTMLElement>('.basket__list', this.container);
+    this.priceShoppingCart = ensureElement<HTMLElement>('.basket__price', this.container);
+    this.buttonShoppingCart = ensureElement<HTMLButtonElement>('.basket__button', this.container);
     this.buttonShoppingCart.addEventListener('click', () => {
       this.events?.emit(pageEvents.cart);
     });
+    this.basket = [];
   };
 
   set total(value: number) {
@@ -39,15 +41,11 @@ export class ShoppingCartView extends Component<IShoppingCart> {
 
   set basket(items: HTMLElement[]) {
     if (items.length > 0) {
-      this.buttonText = 'Оформить';
       this.buttonDisabled = false;
       this.listShoppingCart.replaceChildren(...items);
     } else {
-      const emptyCart = document.createElement('p');
-      this.buttonText = 'Оформить';
-      emptyCart.textContent = 'Корзина пуста';
       this.buttonDisabled = true;
-      this.listShoppingCart.replaceChildren(emptyCart);
+      this.listShoppingCart.replaceChildren();
     }
         
   };

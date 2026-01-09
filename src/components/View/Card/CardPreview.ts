@@ -1,6 +1,7 @@
 import { IProduct } from "../../../types";
 import { categoryMap } from "../../../utils/constants";
 import { Card } from "./Card";
+import { ensureElement } from "../../../utils/utils";
 
 export type TCardPreview = Pick<IProduct, 'description' | 'image' | 'category'>;
 type categoryKey = keyof typeof categoryMap;
@@ -17,10 +18,10 @@ export class CardPreview extends Card <TCardPreview> {
 
     constructor (container: HTMLElement, protected actions: ICardPreview) {
         super(container);
-        this.descriptionEl = this.container.querySelector('.card__text') as HTMLElement;
-        this.buttonEl = this.container.querySelector('.card__button') as HTMLButtonElement;
-        this.imageEl = this.container.querySelector('.card__image') as HTMLImageElement;
-        this.categoryEl = this.container.querySelector('.card__category') as HTMLElement;
+        this.descriptionEl = ensureElement<HTMLElement>('.card__text', this.container);
+        this.buttonEl = ensureElement<HTMLButtonElement>('.card__button', this.container);
+        this.imageEl = ensureElement<HTMLImageElement>('.card__image', this.container);
+        this.categoryEl = ensureElement<HTMLElement>('.card__category', this.container);
 
         this.buttonEl.addEventListener('click', () => {
             this.actions.onClick?.();
@@ -42,7 +43,7 @@ set image(value: string) {
     this.imageEl.src = value;
 }
 
-set availability(value: boolean) {
+set buttonText(value: boolean) {
   this.buttonEl.textContent = value ? 'Удалить из корзины' : 'В корзину';
 }
 
@@ -54,4 +55,5 @@ setdisabledButton(value: boolean): void {
     this.buttonEl.textContent = 'В корзину';
     this.buttonEl.disabled = false;
   }
-}}
+}
+}
