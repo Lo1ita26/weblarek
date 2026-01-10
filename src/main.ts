@@ -79,9 +79,7 @@ function openCard() {
   if (!selectedCard) return;
   const availability: boolean = shoppingCartModel.hasItem(selectedCard.id);
   card.buttonText = availability;
-  if (card.price === null) {
-    card.setdisabledButton(true)
-  }
+  card.setdisabledButton(selectedCard.price === null)
   modal.content = card.render(selectedCard);
   modal.open();
 }
