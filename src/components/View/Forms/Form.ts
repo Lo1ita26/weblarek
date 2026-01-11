@@ -1,3 +1,4 @@
+import { ensureElement } from "../../../utils/utils";
 import { Component } from "../../base/Component";
 
 export abstract class Form<T> extends Component<T> {
@@ -6,8 +7,8 @@ export abstract class Form<T> extends Component<T> {
 
     constructor  (protected form: HTMLFormElement) {
         super(form);
-        this.errors = form.querySelector('.form__errors') as HTMLElement;
-        this.submitButton = form.querySelector('.button[type="submit"]') as HTMLButtonElement;
+        this.errors = ensureElement<HTMLElement>('.form__errors', this.container);
+        this.submitButton = ensureElement<HTMLButtonElement>('.button[type="submit"]', this.container);
     }
 
     set disabledSubmitButton(state: boolean) {

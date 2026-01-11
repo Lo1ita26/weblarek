@@ -1,3 +1,4 @@
+import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/Events";
 import { pageEvents } from "../base/pageEvents";
@@ -14,8 +15,8 @@ export class Success extends Component<ISuccess> {
     constructor(container: HTMLElement, protected events: IEvents) {
         super(container);
 
-        this.descriptionSuccess = this.container.querySelector('.order-success__description') as HTMLElement;
-        this.closeButton = this.container.querySelector('.order-success__close') as HTMLButtonElement;
+        this.descriptionSuccess = ensureElement<HTMLElement>('.order-success__description', this.container);
+        this.closeButton = ensureElement<HTMLButtonElement>('.order-success__close', this.container);
         this.closeButton.addEventListener('click', () => {
             this.events.emit(pageEvents.success);
         });

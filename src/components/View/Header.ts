@@ -11,7 +11,8 @@ export class Header extends Component<IHeaderData> {
     protected ShoppingCartButton: HTMLButtonElement;
     protected counterElement: HTMLElement;
 
-    constructor(container: HTMLElement, protected events: IEvents) {
+    constructor(protected events: IEvents) {
+        const container = ensureElement<HTMLElement>('.header');
         super(container);
         this.ShoppingCartButton = ensureElement<HTMLButtonElement>('.header__basket', this.container);
         this.ShoppingCartButton.addEventListener('click', () => {

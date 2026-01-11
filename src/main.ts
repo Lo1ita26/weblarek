@@ -26,16 +26,14 @@ const event = new EventEmitter();
 const catalogCards = new ProductCatalog(event);
 const api = new Api(API_URL);
 const apiWebLarek = new ApiWebLarek(api);
-const galleryItem = ensureElement<HTMLElement>('main');
-const gallery = new Gallery(galleryItem);
+//const galleryItem = ensureElement<HTMLElement>('main'); /////////////////
+const gallery = new Gallery();
 const shoppingCartModel = new ShoppingCart(event);
-const modalItem = ensureElement<HTMLFormElement>('#modal-container');
-const modal = new Modal(modalItem, event);
+const modal = new Modal(event);
 const shoppingCartTemplate = ensureElement<HTMLTemplateElement>('#basket');//темплейт корзины
 const cardInCartTemplate = ensureElement<HTMLTemplateElement>('#card-basket');//темплейт картчек товаров в корзине
 const shoppingCartView = new ShoppingCartView(cloneTemplate(shoppingCartTemplate), event);
-const headerItem = ensureElement<HTMLElement>('.header');
-const header =  new Header(headerItem, event);
+const header =  new Header(event);
 const buyerData =  new BuyerData(event);
 const formOrderElement = ensureElement<HTMLTemplateElement>('#order');
 const formOrder = new FormOrder(cloneTemplate(formOrderElement), event);
@@ -45,7 +43,7 @@ const successElement = ensureElement<HTMLTemplateElement>('#success');
 const success = new Success(cloneTemplate(successElement), event);
 const templateCardCatalog = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
-const card = new CardPreview(cloneTemplate(cardTemplate), event);
+const preview = new CardPreview(cloneTemplate(cardTemplate), event);
 
 function loadCatalog() {
   apiWebLarek.getProducts()
@@ -78,13 +76,13 @@ function openCard() {
   const selectedCard = catalogCards.getSelectedCard();
   if (!selectedCard) return;
   const availability: boolean = shoppingCartModel.hasItem(selectedCard.id);
-  card.buttonText = availability;
-  card.setdisabledButton(selectedCard.price === null)
-  modal.content = card.render(selectedCard);
+  preview.buttonText = availability;
+  preview.setdisabledButton(selectedCard.price === null)
+  modal.content = preview.render(selectedCard);
   modal.open();
 }
 
-event.on(pageEvents.addTocart, () => {
+event.on(pageEvents.toggle, () => {
   const selectedCard = catalogCards.getSelectedCard();
   if (!selectedCard) return;
   const availability: boolean = shoppingCartModel.hasItem(selectedCard.id);
@@ -145,7 +143,6 @@ event.on<IProduct>(pageEvents.cardDelete, (item) => {
 // Открытие формы заказа (способ оплаты)
 function openFormOrder() {
   const buyer = buyerData.getAllData();
-  validateFormOrder();
   modal.content = formOrder.render({
     payment: buyer.payment,
     address: buyer.address
@@ -158,20 +155,19 @@ event.on(pageEvents.cart, () => {
 
 event.on<{field: keyof IBuyer, value: TPayment}>(pageEvents.order, (data) => {
   buyerData.saveField(data.field, data.value);
-  validateFormOrder();
 })
 
-// Валидация формы способа оплаты
-function validateFormOrder() {
-  const error = buyerData.validateData();
-  const block = 'payment' in error || 'address' in error;
-  formOrder.disabledSubmitButton = block;
-}
+event.on(pageEvents.orderUpdate, () => {
+  const buyer = buyerData.getAllData();
+  const errors = buyerData.validateData();
+  formOrder.payment = buyer.payment
+  formOrder.address = buyer.address
+  formOrder.setErrors(errors)
+})
 
 // Открытие формы (контакты)
 function openFormContact () {
   const buyer = buyerData.getAllData();
-  validateFormContact();
   modal.content = formContact.render({
     email: buyer.email,
     phone: buyer.phone
@@ -184,15 +180,15 @@ event.on(pageEvents.contactForm, () => {
 
 event.on<{field: keyof IBuyer, value: TPayment | string}>(pageEvents.emailForm, (data) => {
   buyerData.saveField(data.field, data.value);
-  validateFormContact();
 })
 
-// Валидация формы контакты
-function validateFormContact() {
-  const error = buyerData.validateData();
-  const block = 'email' in error || 'phone' in error;
-  formContact.disabledSubmitButton = block;
-}
+event.on(pageEvents.contactUpdate, () => {
+  const buyer = buyerData.getAllData();
+  const errors = buyerData.validateData();
+  formContact.emailSet = buyer.email
+  formContact.phoneSet = buyer.phone
+  formContact.setErrors(errors)
+})
 
 // Открытие окна с успешным заказом
 function openSuccess(total: number): void {
@@ -208,6 +204,7 @@ event.on(pageEvents.submit, () => {
   .then(({total}) => {
   openSuccess(total);
   shoppingCartModel.clearShoppingCart();
+  buyerData.clearData();
   })
   .catch(error => {
     console.log('Ошибка при отправке заказа', error)

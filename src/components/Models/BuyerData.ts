@@ -1,5 +1,6 @@
 import { IBuyer, TPayment, ValidationError } from "../../types";
 import { IEvents } from "../base/Events";
+import { pageEvents } from "../base/pageEvents";
 
 export class BuyerData {
     private data: IBuyer = {
@@ -20,6 +21,8 @@ export class BuyerData {
         } else {
           this.data[field] = value;
         }
+        this.events.emit(pageEvents.orderUpdate);
+        this.events.emit(pageEvents.contactUpdate);
       }
 
     //получает данные
@@ -35,6 +38,8 @@ export class BuyerData {
             phone: '',
             email: ''
         };
+        this.events.emit(pageEvents.orderUpdate);
+        this.events.emit(pageEvents.contactUpdate);
     }
 
     validateData(): ValidationError {

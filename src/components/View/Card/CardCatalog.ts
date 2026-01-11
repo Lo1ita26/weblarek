@@ -1,5 +1,6 @@
 import { IProduct, IActionsWithCard } from "../../../types"
 import { categoryMap } from "../../../utils/constants";
+import { ensureElement } from "../../../utils/utils";
 import { Card } from "./Card"
 
 export type TCardCatalog = Pick<IProduct, 'image' | 'category'>;
@@ -11,8 +12,8 @@ export class CardCatalog extends Card<TCardCatalog> {
 
     constructor (container: HTMLElement, actions?: IActionsWithCard) {
         super(container);
-        this.categoryEl = container.querySelector('.card__category') as HTMLElement;
-        this.imageEl = container.querySelector('.card__image') as HTMLImageElement;
+        this.categoryEl = ensureElement<HTMLElement>('.card__category', this.container);
+        this.imageEl = ensureElement<HTMLImageElement>('.card__image', this.container)
         if (actions?.onClick) {
             this.container.addEventListener('click', actions.onClick);
         }

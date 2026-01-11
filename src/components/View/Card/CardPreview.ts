@@ -22,7 +22,7 @@ export class CardPreview extends Card <TCardPreview> {
         this.categoryEl = ensureElement<HTMLElement>('.card__category', this.container);
 
         this.buttonEl.addEventListener('click', () => {
-            this.events.emit(pageEvents.addTocart);
+            this.events.emit(pageEvents.toggle);
     })
 }
 

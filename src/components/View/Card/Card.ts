@@ -2,8 +2,8 @@ import { Component } from "../../base/Component";
 import { ensureElement } from "../../../utils/utils";
 
 export abstract class Card<T> extends Component<T> {
-    protected titleEl: HTMLElement | null;
-    protected priceEl: HTMLElement | null;
+    protected titleEl: HTMLElement;
+    protected priceEl: HTMLElement;
 
     constructor (container: HTMLElement) {
         super(container);

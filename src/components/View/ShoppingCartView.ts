@@ -9,7 +9,7 @@ interface IShoppingCart {
 }
 
 export class ShoppingCartView extends Component<IShoppingCart> {
-  protected titleShoppingCart: HTMLElement | null;
+  protected titleShoppingCart: HTMLElement;
   protected listShoppingCart: HTMLElement;
   protected priceShoppingCart: HTMLElement;
   protected buttonShoppingCart: HTMLButtonElement;
