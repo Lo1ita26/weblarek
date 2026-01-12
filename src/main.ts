@@ -26,7 +26,6 @@ const event = new EventEmitter();
 const catalogCards = new ProductCatalog(event);
 const api = new Api(API_URL);
 const apiWebLarek = new ApiWebLarek(api);
-//const galleryItem = ensureElement<HTMLElement>('main'); /////////////////
 const gallery = new Gallery();
 const shoppingCartModel = new ShoppingCart(event);
 const modal = new Modal(event);

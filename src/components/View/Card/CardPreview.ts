@@ -50,7 +50,6 @@ setdisabledButton(value: boolean): void {
     this.buttonEl.textContent = 'Недоступно';
     this.buttonEl.disabled = true;
   } else {
-    this.buttonEl.textContent = 'В корзину';
     this.buttonEl.disabled = false;
   }
 }
